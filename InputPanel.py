@@ -61,6 +61,14 @@ class InputPanel(wx.Panel):
         return dna_input_box
     
     def create_settings_box(self):
+	    """ Creates the right side of the GUI, which contains the
+        settings for the primers to be found.
+        
+        Parameters:
+            -
+        Returns:
+            A wx.BoxSizer containing all the contents of this side
+        """
         self.primers_button = wx.Button(self, -1, label="Search primers")
         settings_box = wx.BoxSizer(wx.VERTICAL)
         settings_box.Add(self.create_input_settings(), 3, wx.EXPAND)
@@ -68,20 +76,38 @@ class InputPanel(wx.Panel):
         return settings_box
 
     def create_input_settings(self, main_box=wx.BoxSizer(wx.HORIZONTAL)):
+        """ A method for easily creating settings through the
+        input_settings list in this method. It is aimed to either
+        create spacers or SpinButtons defined by a settings dict.
+        The keys of a dictionary within the input settings:
+            t: The text which will show to the left of the spin button
+            s: The name of the field which would be set to the widget
+            on this object.
+            sp: A boolean value whether this is a spacer or SpinButton.
+        
+        Parameters:
+            main_box - A BoxSizer which will contain the settings. By
+            default this is a horizontal box sizer.
+        Returns:
+            A (new) BoxSizer which contains all the settings.
+        """
         input_settings = [{"t": "Max PCR product size", "s": "max_target",
                           "sp": True}, {"t": "Range settings",
                           "sp": False}, {"t": "Minimum", "s": "range_minimum",
                           "sp": True}, {"t": "Maximum", "s": "range_maximum",
                           "sp": True}]
+        # Column for the text
         text_box = wx.BoxSizer(wx.VERTICAL)
+        # Column for the actual input
         spinner_box = wx.BoxSizer(wx.VERTICAL)
         for input_setting in input_settings:
             text = wx.StaticText(self, -1, input_setting["t"])
             text_box.Add(text, 1, wx.ALIGN_LEFT)
-            spin = (0, 0)            
+            spin = (0, 0)
+            # Add a spacer when this is shouldn't be a spinner
             if input_setting["sp"]:
                 spin = wx.SpinButton(self, -1,
-                                     style=InputPanel.SPINNER_STYLE,)
+                                     style=InputPanel.SPINNER_STYLE)
                 spin.SetRange(0, pow(2, 31) - 1)
                 setattr(self, input_setting["s"], spin)
             spinner_box.Add(spin, 1, wx.EXPAND)       
