@@ -12,7 +12,6 @@ class InputPanel(wx.Panel):
     # The default spinner style
     SPINNER_STYLE = (wx.SP_HORIZONTAL | wx.SP_ARROW_KEYS | wx.SP_WRAP)
 
-    
     def __init__(self, parent, id):
         """ Creates the main Sizer container and calls
         #create_dna_input and #create_settings_box to fill this
@@ -39,7 +38,7 @@ class InputPanel(wx.Panel):
         only contain the following characters: a, t, c, g, n, x or those
         characters in upper case. This is not enforced here, but is
         implemented on the containing Frame.
-        
+
         Parameters:
             -
         Returns:
@@ -59,11 +58,11 @@ class InputPanel(wx.Panel):
         dna_input_box.Add(header_box, 1, wx.ALIGN_CENTER)
         dna_input_box.Add(self.dna_field, 4, wx.EXPAND)
         return dna_input_box
-    
+
     def create_settings_box(self):
 	    """ Creates the right side of the GUI, which contains the
         settings for the primers to be found.
-        
+
         Parameters:
             -
         Returns:
@@ -84,7 +83,7 @@ class InputPanel(wx.Panel):
             s: The name of the field which would be set to the widget
             on this object.
             sp: A boolean value whether this is a spacer or SpinButton.
-        
+
         Parameters:
             main_box - A BoxSizer which will contain the settings. By
             default this is a horizontal box sizer.
@@ -110,7 +109,7 @@ class InputPanel(wx.Panel):
                                      style=InputPanel.SPINNER_STYLE)
                 spin.SetRange(0, pow(2, 31) - 1)
                 setattr(self, input_setting["s"], spin)
-            spinner_box.Add(spin, 1, wx.EXPAND)       
+            spinner_box.Add(spin, 1, wx.EXPAND)
         main_box.Add(text_box, 1, wx.EXPAND)
         main_box.Add(spinner_box, 1, wx.EXPAND)
         return main_box

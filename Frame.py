@@ -13,7 +13,7 @@ class Frame(wx.Frame):
     find proper primers. After that, the results must be shown on the
     result screen.
     """
-    
+
     def __init__(self, parent, id, title):
         """ Creates the inputpanel, resultpanel and binds events to
         the widgets of those panels.
@@ -26,8 +26,8 @@ class Frame(wx.Frame):
             -
         """
         super(Frame, self).__init__(parent, id, title, size=(550, 150),
-                                    style=(wx.MINIMIZE_BOX | wx.SYSTEM_MENU | 
-                                           wx.CLOSE_BOX | wx.CAPTION | 
+                                    style=(wx.MINIMIZE_BOX | wx.SYSTEM_MENU |
+                                           wx.CLOSE_BOX | wx.CAPTION |
                                            wx.CLIP_CHILDREN))
         self.input_panel = InputPanel(self, -1)
         self.usr_target = False
@@ -48,8 +48,8 @@ class Frame(wx.Frame):
         self.input_panel.dna_field.Bind(wx.EVT_TEXT_PASTE, self.paste_fasta)
         self.input_panel.max_target.Bind(wx.EVT_SPIN, self.target_handler)
         self.input_panel.range_minimum.Bind(wx.EVT_SPIN, self.minimum_handler)
-        self.input_panel.range_maximum.Bind(wx.EVT_SPIN, self.maximum_handler) 
-    
+        self.input_panel.range_maximum.Bind(wx.EVT_SPIN, self.maximum_handler)
+
     def check_sequence(self, *args):
         """ Checks the sequence of the input field and removes unkown
         nucleotides. Case does not matter, but those characters are
@@ -59,7 +59,7 @@ class Frame(wx.Frame):
 
         Parameters:
             *args - Any arguments can be given, nothing is done with
-            those. This is in place to be compatible with event 
+            those. This is in place to be compatible with event
             arguments which are not used.
         Returns:
             A boolean whether the check was succesful or not.
@@ -80,13 +80,13 @@ class Frame(wx.Frame):
             self.input_panel.range_minimum.SetRange(0, 1)
             self.input_panel.range_maximum.SetRange(0, 1)
         return False
-    
+
     def paste_fasta(self, evt):
         """ Manages the pasting of text into the DNA input field. This
         also supports the FASTA format (for a single sequence) by
         checking for a '>' at the beginning of the text and then simply
         removes the first line.
-        
+
         Parameters:
             evt - The wx paste event object.
         Returns:
@@ -145,11 +145,11 @@ class Frame(wx.Frame):
         value = evt.GetEventObject().GetValue()
         if value <= self.input_panel.range_minimum.GetValue():
             self.input_panel.range_minimum.SetValue(value - 1)
-            
+
 
 if __name__ == '__main__':
     # Start the app regularly
     app = wx.App()
     Frame(None, -1, "Simple primer designer")
     app.MainLoop()
-    
+
