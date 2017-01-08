@@ -152,4 +152,3 @@ if __name__ == '__main__':
     app = wx.App()
     Frame(None, -1, "Simple primer designer")
     app.MainLoop()
-

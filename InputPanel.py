@@ -14,7 +14,7 @@ class InputPanel(wx.Panel):
 
     def __init__(self, parent, id):
         """ Creates the main Sizer container and calls
-        #create_dna_input and #create_settings_box to fill this
+        # create_dna_input and #create_settings_box to fill this
         container. Then this containeR is put in another container
         which makes sure there are 5 pixels around the border.
 
@@ -105,12 +105,11 @@ class InputPanel(wx.Panel):
             spin = (0, 0)
             # Add a spacer when this is shouldn't be a spinner
             if input_setting["sp"]:
-                spin = wx.SpinButton(self, -1,
-                                     style=InputPanel.SPINNER_STYLE)
+                spin = wx.SpinCtrl(self, -1,
+                                   style=InputPanel.SPINNER_STYLE)
                 spin.SetRange(0, pow(2, 31) - 1)
                 setattr(self, input_setting["s"], spin)
             spinner_box.Add(spin, 1, wx.EXPAND)
         main_box.Add(text_box, 1, wx.EXPAND)
         main_box.Add(spinner_box, 1, wx.EXPAND)
         return main_box
-
