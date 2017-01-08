@@ -46,9 +46,9 @@ class Frame(wx.Frame):
         """
         self.input_panel.dna_field.Bind(wx.EVT_TEXT, self.check_sequence)
         self.input_panel.dna_field.Bind(wx.EVT_TEXT_PASTE, self.paste_fasta)
-        self.input_panel.max_target.Bind(wx.EVT_SPIN, self.target_handler)
-        self.input_panel.range_minimum.Bind(wx.EVT_SPIN, self.minimum_handler)
-        self.input_panel.range_maximum.Bind(wx.EVT_SPIN, self.maximum_handler)
+        self.input_panel.max_target.Bind(wx.EVT_SPINCTRL, self.target_handler)
+        self.input_panel.range_minimum.Bind(wx.EVT_SPINCTRL, self.minimum_handler)
+        self.input_panel.range_maximum.Bind(wx.EVT_SPINCTRL, self.maximum_handler)
 
     def check_sequence(self, *args):
         """ Checks the sequence of the input field and removes unkown
@@ -78,7 +78,7 @@ class Frame(wx.Frame):
         else:
             self.input_panel.max_target.SetRange(0, 1)
             self.input_panel.range_minimum.SetRange(0, 1)
-            self.input_panel.range_maximum.SetRange(0, 1)
+            self.input_panel.range_maximum.SetRange(1, 2)
         return False
 
     def paste_fasta(self, evt):
@@ -118,10 +118,15 @@ class Frame(wx.Frame):
         if not self.usr_target:
             self.usr_target = True
 
+    def set_maximum_pcr(self):
+        #current_value = self.input_panelmax_target.GetValue()
+        maximum_value = self.input_panel.range_maximum.GetValue() - self.input_panel.range_minimum.GetValue()
+        self.input_panel.max_target.SetRange(0, maximum_value)
+
     def minimum_handler(self, evt):
         """ Handles the spin event for the range_minimum widget, and
         makes sure the range_maximum widget is greater than this
-        minimum.
+        minimum. Also sets the maximum value of the PCR product size.
 
         Parameters:
             evt - The wx Spin event
@@ -131,11 +136,12 @@ class Frame(wx.Frame):
         value = evt.GetEventObject().GetValue()
         if value >= self.input_panel.range_maximum.GetValue():
             self.input_panel.range_maximum.SetValue(value + 1)
+        self.set_maximum_pcr()
 
     def maximum_handler(self, evt):
         """ Handles the spin event for the range_maximum widget, and
         makes sure the range_minimum widget is lower than this
-        minimum.
+        minimum. Also sets the maximum value of the PCR product size.
 
         Parameters:
             evt - The wx Spin event
@@ -145,6 +151,7 @@ class Frame(wx.Frame):
         value = evt.GetEventObject().GetValue()
         if value <= self.input_panel.range_minimum.GetValue():
             self.input_panel.range_minimum.SetValue(value - 1)
+        self.set_maximum_pcr()
 
 
 if __name__ == '__main__':

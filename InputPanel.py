@@ -60,7 +60,7 @@ class InputPanel(wx.Panel):
         return dna_input_box
 
     def create_settings_box(self):
-	    """ Creates the right side of the GUI, which contains the
+        """ Creates the right side of the GUI, which contains the
         settings for the primers to be found.
 
         Parameters:
