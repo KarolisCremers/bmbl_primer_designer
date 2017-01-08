@@ -47,8 +47,10 @@ class Frame(wx.Frame):
         self.input_panel.dna_field.Bind(wx.EVT_TEXT, self.check_sequence)
         self.input_panel.dna_field.Bind(wx.EVT_TEXT_PASTE, self.paste_fasta)
         self.input_panel.max_target.Bind(wx.EVT_SPINCTRL, self.target_handler)
-        self.input_panel.range_minimum.Bind(wx.EVT_SPINCTRL, self.minimum_handler)
-        self.input_panel.range_maximum.Bind(wx.EVT_SPINCTRL, self.maximum_handler)
+        self.input_panel.range_minimum.Bind(
+            wx.EVT_SPINCTRL, self.minimum_handler)
+        self.input_panel.range_maximum.Bind(
+            wx.EVT_SPINCTRL, self.maximum_handler)
 
     def check_sequence(self, *args):
         """ Checks the sequence of the input field and removes unkown
@@ -69,9 +71,10 @@ class Frame(wx.Frame):
         self.input_panel.dna_field.ChangeValue(sequence)
         if sequence:
             length_seq = len(sequence)
-            self.input_panel.max_target.SetRange(0, length_seq)
+            self.set_maximum_pcr()
             if not self.usr_target:
-                self.input_panel.max_target.SetValue(length_seq)
+                self.input_panel.max_target.SetValue(
+                    self.input_panel.max_target.GetMax())
             self.input_panel.range_minimum.SetRange(1, length_seq - 1)
             self.input_panel.range_maximum.SetRange(2, length_seq)
             return True
@@ -119,8 +122,16 @@ class Frame(wx.Frame):
             self.usr_target = True
 
     def set_maximum_pcr(self):
-        #current_value = self.input_panelmax_target.GetValue()
-        maximum_value = self.input_panel.range_maximum.GetValue() - self.input_panel.range_minimum.GetValue()
+        """ Sets the maximum pcr product size according to the range of
+        the annealing range.
+
+        Parameters:
+            -
+        Returns:
+            -
+        """
+        maximum_value = (self.input_panel.range_maximum.GetValue() -
+                         self.input_panel.range_minimum.GetValue())
         self.input_panel.max_target.SetRange(0, maximum_value)
 
     def minimum_handler(self, evt):
