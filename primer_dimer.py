@@ -8,6 +8,7 @@ def check_bonds(primer_a, primer_b, required_bonds):
             bonds += 1
         if bonds == required_bonds:
             return True
+    return False
 
 
 def primer_space_generator(primer, length):
@@ -38,6 +39,9 @@ def is_self_dimer(primer, required_bonds=3):
         full_primer = primer_a if len(primer_a) > len(primer_b) else primer_b
         padded_primer = (" " * len_difference) + (
             primer_b if full_primer == primer_a else primer_a)
+        print("'" + full_primer + "'")
+        print("'" + padded_primer + "'")
+        print("============")
         if is_dimer(full_primer, padded_primer, required_bonds):
             return True
     return False
