@@ -1,4 +1,5 @@
 import re
+from primer_dimer import is_dimer, is_self_dimer
 
 
 def calc_primer_details(primer):
@@ -38,7 +39,9 @@ def find_all_primers(primer_region):
                                               melt_temp=melting_temp,
                                               offset=offset))
         offset += 1
-    return found_primers
+    # Future: filter out hairpins
+    # Filter out self dimers
+    return list(filter(lambda p: not is_self_dimer(p['seq']), found_primers))
 
 
 def primer_filter(primer, max_pcr):
@@ -46,12 +49,12 @@ def primer_filter(primer, max_pcr):
     melt_temp = primer['melt_temp']
     return lambda o: (o['offset'] - ost + len(o['seq']) <= max_pcr and
                       ost + len(primer['seq']) <= o['offset'] and
-                      abs(o['melt_temp'] - melt_temp) <= 5)
+                      abs(o['melt_temp'] - melt_temp) <= 5 and
+                      not is_dimer(primer['seq'], o['seq']))
 
 
 def link_primers(primer_list, max_pcr):
     links = []
-    # Future: filter out hairpins/self dimers
     for _ in range(0, len(primer_list)):
         link = dict(primer=primer_list[0])
         del primer_list[0]
@@ -60,8 +63,6 @@ def link_primers(primer_list, max_pcr):
                                           primer_list))
         # Only when primers are available, add it to the links
         if link['end_primers']:
-            # Future: check whether dimers exists between primers and filter
-            # them out
             # Sort the list by length of the pcr product and then the
             # melting_temp
             link['end_primers'].sort(key=lambda o: o['offset'], reverse=True)
