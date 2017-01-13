@@ -20,10 +20,17 @@ Author: Karolis Cremers, Wesley Ameling
 from re import match, IGNORECASE
 
 
+## ==============================================================
+## = LET OP: Ik ben overgegaan naar een object geörienteerde    =
+## = structuur, zie het bestand TargetPrimerFinder waar jouw    =
+## = algoritme geïmplementeerd kan worden.                      =
+## ==============================================================
+
 def calc_primer_details(primer):
     """ Calculates the melting temperature and GC% of a primer which
     has a length less than 25 nucleotides.
     """
+    ## DEZE FUNCTIE IS NIET MEER NODIG IN HET OBJECT GEORIENTEERDE
     if not match('^[ATCG]+$', primer, IGNORECASE):
         raise Exception('Primer contains non-base characters!')
     gc_length = 0
@@ -36,6 +43,11 @@ def calc_primer_details(primer):
     melting_temp = 4 * gc_length + 2 * (len(primer) - gc_length)
     return gc_perc, melting_temp
 
+## ==============================================================
+## = LET OP: Ik ben overgegaan naar een object geörienteerde    =
+## = structuur, zie het bestand TargetPrimerFinder waar jouw    =
+## = algoritme geïmplementeerd kan worden.                      =
+## ==============================================================
 
 def primer_finder(primer_region, primer_length):
     """
@@ -65,12 +77,18 @@ def primer_finder(primer_region, primer_length):
             primer_length += 1
     return primers
 
+## ==============================================================
+## = LET OP: Ik ben overgegaan naar een object geörienteerde    =
+## = structuur, zie het bestand TargetPrimerFinder waar jouw    =
+## = algoritme geïmplementeerd kan worden.                      =
+## ==============================================================
 
 def reverse_flipper(reverse_primer_region, primer_length):
     """
     This function converts the given reverse primer region
     to the right right binding strand.
     """
+    ## DEZE FUNCTIE IS NIET MEER NODIG IN HET OBJECT GEORIENTEERDE
     reverse_primer_region_flipped = ""
     for nucleotide in range((len(reverse_primer_region) - 1), 0, -1):
         #volgens mij raak ik hier een nucleotide kwijt maar zonder de - 1 wilt hij het niet doen.
@@ -85,6 +103,11 @@ def reverse_flipper(reverse_primer_region, primer_length):
     reverse_primers = primer_finder(reverse_primer_region_flipped, primer_length)
     return reverse_primers
 
+## ==============================================================
+## = LET OP: Ik ben overgegaan naar een object geörienteerde    =
+## = structuur, zie het bestand TargetPrimerFinder waar jouw    =
+## = algoritme geïmplementeerd kan worden.                      =
+## ==============================================================
 
 def sequence_cutter(sequence_input, starget_start, target_end, primer_length):
     """
@@ -97,6 +120,11 @@ def sequence_cutter(sequence_input, starget_start, target_end, primer_length):
     reverse_primer_region = sequence_input[((target_end - primer_length) - 1):]
     return forward_primer_region, reverse_primer_region
 
+## ==============================================================
+## = LET OP: Ik ben overgegaan naar een object geörienteerde    =
+## = structuur, zie het bestand TargetPrimerFinder waar jouw    =
+## = algoritme geïmplementeerd kan worden.                      =
+## ==============================================================
 
 def main():
     """
@@ -130,5 +158,11 @@ def main():
     print(forward_primers)
     print("reverse:")
     print(reverse_primers)
+
+## ==============================================================
+## = LET OP: Ik ben overgegaan naar een object geörienteerde    =
+## = structuur, zie het bestand TargetPrimerFinder waar jouw    =
+## = algoritme geïmplementeerd kan worden.                      =
+## ==============================================================
 
 main()
