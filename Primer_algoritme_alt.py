@@ -22,7 +22,7 @@ def find_all_primers(primer_region):
     found_primers = []
     while len(primer_region) >= offset + 17:
         current_region = primer_region[offset:]
-        for primer_length in range(17, min(26, len(primer_region) - offset)):
+        for primer_length in range(17, min(30, len(primer_region) - offset)):
             primer = current_region[:primer_length]
             gc_perc, melting_temp = calc_primer_details(primer)
             if 50 <= gc_perc <= 60 and 55 <= melting_temp <= 65:
@@ -41,7 +41,8 @@ def find_all_primers(primer_region):
         offset += 1
     # Future: filter out hairpins
     # Filter out self dimers
-    return list(filter(lambda p: not is_self_dimer(p['seq']), found_primers))
+    return list(filter(lambda p: (not is_hairpin(p['seq']), found_primers) and
+                                  not is_self_dimer(p['seq'])))
 
 
 def primer_filter(primer, max_pcr):
