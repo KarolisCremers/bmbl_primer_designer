@@ -1,4 +1,20 @@
+from PrimerChecker import PrimerChecker
 import wx
+import re
+
+
+def event_wrapper(func, *args, **kwargs):
+    """ Wraps a function so multiple arguments can be given to a method
+    which handles an event.
+
+    Parameters:
+        func - The method or function which should be executed.
+        *args - A form of varargs, any parameter can be given
+        **kwargs - A form of named varargs, any parameter can be given
+    Returns:
+        A lambda function wrapping the function to be executed
+    """
+    return lambda evt: func(evt, *args, **kwargs)
 
 
 def default_spinner(parent):
@@ -32,6 +48,7 @@ class InputPanel(wx.Panel):
             -
         """
         super(InputPanel, self).__init__(parent, id)
+        self.skip_additional = False
         required_input = wx.BoxSizer(wx.HORIZONTAL)
         required_input.Add(self.create_dna_input(), 1, wx.EXPAND)
         required_input.Add(self.create_settings_box(), 1, wx.EXPAND | wx.LEFT,
@@ -40,6 +57,137 @@ class InputPanel(wx.Panel):
         padding_box.Add(required_input, 1, wx.EXPAND | wx.ALL, 5)
         padding_box.Add(self.create_optional_input(), 1, wx.EXPAND | wx.ALL, 5)
         self.SetSizer(padding_box)
+        self.bind_events()
+
+    def create_primer_checker(self):
+        """ Creates a new PrimerChecker object according to the
+        experimental checking values in the gui. Those are from the
+        widgets dimer_check, self_dimer_check and hairpin_check.
+
+        Parameters:
+            -
+        Returns:
+            A new PrimerChecker object with the correct settings
+        """
+        check_dimer = self.dimer_check.GetValue()
+        check_self_dimer = self.self_dimer_check.GetValue()
+        check_hairpin = self.hairpin_check.GetValue()
+        return PrimerChecker(dimer=check_dimer, self_dimer=check_self_dimer,
+                             hairpin=check_hairpin)
+
+    ## Event methods
+
+    def bind_events(self):
+        """ Binds the events to the widgets of this and
+        result panel.
+        """
+        self.dna_field.Bind(wx.EVT_TEXT, self.check_sequence)
+        self.dna_field.Bind(wx.EVT_TEXT_PASTE, self.paste_fasta)
+        self.anneal_range_minimum.Bind(
+            wx.EVT_SPINCTRL, event_wrapper(self.range_handler,
+                                           self.anneal_range_maximum, True))
+        self.anneal_range_maximum.Bind(
+            wx.EVT_SPINCTRL, event_wrapper(self.range_handler,
+                                           self.anneal_range_minimum, False))
+        self.target_range_minimum.Bind(
+            wx.EVT_SPINCTRL, event_wrapper(self.range_handler,
+                                           self.target_range_maximum, True))
+        self.target_range_maximum.Bind(
+            wx.EVT_SPINCTRL, event_wrapper(self.range_handler,
+                                           self.target_range_minimum, False))
+
+    def check_sequence(self, *args):
+        """ Checks the sequence of the input field and removes unkown
+        nucleotides. Case does not matter, but those characters are
+        allowed: a, t, c, g, n and x.
+        This method also adjusts setting limits so the max value of
+        spinners are equal to the length of the given sequence.
+
+        Parameters:
+            *args - Any arguments can be given, nothing is done with
+            those. This is in place to be compatible with event
+            arguments which are not used.
+        Returns:
+            A boolean whether the check was succesful or not.
+        """
+        sequence = self.dna_field.GetValue()
+        sequence = re.sub("[^atcgnxATCGNX]", "", sequence)
+        self.dna_field.ChangeValue(sequence)
+        if sequence:
+            length_seq = len(sequence)
+            self.anneal_range_minimum.SetRange(1, length_seq - 1)
+            self.anneal_range_maximum.SetRange(2, length_seq)
+            self.set_additional_widgets()
+            return True
+        else:
+            self.max_pcr.SetRange(0, 1)
+            self.anneal_range_minimum.SetRange(0, 1)
+            self.anneal_range_maximum.SetRange(1, 2)
+        return False
+
+    def paste_fasta(self, evt):
+        """ Manages the pasting of text into the DNA input field. This
+        also supports the FASTA format (for a single sequence) by
+        checking for a '>' at the beginning of the text and then simply
+        removes the first line.
+
+        Parameters:
+            evt - The wx paste event object.
+        Returns:
+            -
+        """
+        # Get the paste value
+        if not wx.TheClipboard.IsOpened():
+            wx.TheClipboard.Open()
+        text_data_object = wx.TextDataObject()
+        if wx.TheClipboard.GetData(text_data_object):
+            text = text_data_object.GetText()
+            # Remove fasta header
+            if text.startswith('>'):
+                data = text.split('\n')
+                del data[0]
+                text = ''.join(data)
+            self.dna_field.SetValue(text)
+        wx.TheClipboard.Close()
+
+    def set_additional_widgets(self):
+        """ Sets the maximum pcr product size according to the range of
+        the annealing range. Also limits the range of the target
+        """
+        self.skip_additional = True
+        minimum_range = self.anneal_range_minimum.GetValue()
+        maximum_range = self.anneal_range_maximum.GetValue()
+        self.max_pcr.SetRange(0, maximum_range - minimum_range)
+        self.target_range_minimum.SetRange(minimum_range, maximum_range - 1)
+        self.target_range_maximum.SetRange(minimum_range + 1, maximum_range)
+        self.skip_additional = False
+
+    def range_handler(self, evt, other_widget, add):
+        """ Handles the spin events for the anneal_range_minimum,
+        anneal_range_maximum, target_range_minimum and
+        target_range_maximum widgets. This makes sure that the other
+        widget of the range is set appropriately. This is done by
+        adding or substracting 1 value, what is determined by the add
+        parameter. Also sets the maximum value of the PCR product size
+        and correct range for the target range.
+
+        Parameters:
+            evt - The wx Spin event
+            other_widget - The widget which needs to be checked against
+            add - Whether to add or subtract
+        Returns:
+            -
+        """
+        value = evt.GetEventObject().GetValue()
+        other_value = other_widget.GetValue()
+        if other_value >= value and not add:
+            other_widget.SetValue(value - 1)
+        elif value >= other_value and add:
+            other_widget.SetValue(value + 1)
+        if not self.skip_additional:
+            self.set_additional_widgets()
+
+    ## Panel creation methods
 
     def create_dna_input(self):
         """ Creates the left side of the GUI, which contains the text
@@ -100,7 +248,7 @@ class InputPanel(wx.Panel):
         """
         spinner_settings = [{"t": "Target range settings"},
                             {"t": "Minimum", "f": "target_range_minimum"},
-                            {"t": "Maximum", "f": "target_range_minimum"}]
+                            {"t": "Maximum", "f": "target_range_maximum"}]
         optional_box = wx.StaticBox(self, wx.ID_ANY, "Optional settings")
         optional_settings = wx.StaticBoxSizer(optional_box, wx.HORIZONTAL)
         optional_settings.Add(self.create_widget_box(spinner_settings), 2,
