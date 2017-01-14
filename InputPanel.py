@@ -1,6 +1,13 @@
 import wx
 
 
+def default_spinner(parent):
+    spin = wx.SpinCtrl(parent, wx.ID_ANY,
+                       style=InputPanel.SPINNER_STYLE)
+    spin.SetRange(0, 0)
+    return spin
+
+
 class InputPanel(wx.Panel):
     """ This is the panel which contains all the input fields in the
     layout. The behaviour however is not defined in this class, as
@@ -25,11 +32,13 @@ class InputPanel(wx.Panel):
             -
         """
         super(InputPanel, self).__init__(parent, id)
-        main_box = wx.BoxSizer(wx.HORIZONTAL)
-        main_box.Add(self.create_dna_input(), 1, wx.EXPAND)
-        main_box.Add(self.create_settings_box(), 1, wx.EXPAND | wx.LEFT, 5)
-        padding_box = wx.BoxSizer()
-        padding_box.Add(main_box, 1, wx.EXPAND | wx.ALL, 5)
+        required_input = wx.BoxSizer(wx.HORIZONTAL)
+        required_input.Add(self.create_dna_input(), 1, wx.EXPAND)
+        required_input.Add(self.create_settings_box(), 1, wx.EXPAND | wx.LEFT,
+                           5)
+        padding_box = wx.BoxSizer(wx.VERTICAL)
+        padding_box.Add(required_input, 1, wx.EXPAND | wx.ALL, 5)
+        padding_box.Add(self.create_optional_input(), 1, wx.EXPAND | wx.ALL, 5)
         self.SetSizer(padding_box)
 
     def create_dna_input(self):
@@ -47,12 +56,12 @@ class InputPanel(wx.Panel):
         """
         # Create the text header, which is centered
         header_box = wx.BoxSizer(wx.HORIZONTAL)
-        header_box.Add(wx.StaticText(self, -1, "Insert template DNA:"), 1,
+        header_box.Add(wx.StaticText(self, wx.ID_ANY, "Insert template DNA:"), 1,
                        wx.ALIGN_CENTER)
         # Create the input textbox
-        self.dna_field = wx.TextCtrl(self, -1, style=(wx.TE_MULTILINE |
-                                                      wx.TE_RICH2 |
-                                                      wx.TE_CHARWRAP))
+        self.dna_field = wx.TextCtrl(self, wx.ID_ANY, style=(wx.TE_MULTILINE |
+                                                             wx.TE_RICH2 |
+                                                             wx.TE_CHARWRAP))
         # Add everything to a box
         dna_input_box = wx.BoxSizer(wx.VERTICAL)
         dna_input_box.Add(header_box, 1, wx.ALIGN_CENTER)
@@ -68,48 +77,82 @@ class InputPanel(wx.Panel):
         Returns:
             A wx.BoxSizer containing all the contents of this side
         """
-        self.primers_button = wx.Button(self, -1, label="Search primers")
+        input_settings = [{"t": "Max PCR product size", "f": "max_pcr"},
+                          {"t": "Annealing range settings"}, {"t": "Minimum",
+                          "f": "anneal_range_minimum"}, {"t": "Maximum",
+                          "f": "anneal_range_maximum"}]
+        self.primers_button = wx.Button(
+            self, wx.ID_ANY, label="Search primers")
         settings_box = wx.BoxSizer(wx.VERTICAL)
-        settings_box.Add(self.create_input_settings(), 3, wx.EXPAND)
+        settings_box.Add(self.create_widget_box(input_settings), 3, wx.EXPAND)
         settings_box.Add(self.primers_button, 1, wx.ALIGN_BOTTOM | wx.EXPAND)
         return settings_box
 
-    def create_input_settings(self, main_box=wx.BoxSizer(wx.HORIZONTAL)):
-        """ A method for easily creating settings through the
-        input_settings list in this method. It is aimed to either
-        create spacers or SpinButtons defined by a settings dict.
-        The keys of a dictionary within the input settings:
-            t: The text which will show to the left of the spin button
-            s: The name of the field which would be set to the widget
-            on this object.
-            sp: A boolean value whether this is a spacer or SpinButton.
+    def create_optional_input(self):
+        """ Creates all the optional settings box which contains all
+        optional settings. Those settings are created using
+        create_widget_box.
 
         Parameters:
-            main_box - A BoxSizer which will contain the settings. By
-            default this is a horizontal box sizer.
+            -
+        Returns:
+            A BoxSizer containing the settings
+        """
+        spinner_settings = [{"t": "Target range settings"},
+                            {"t": "Minimum", "f": "target_range_minimum"},
+                            {"t": "Maximum", "f": "target_range_minimum"}]
+        optional_box = wx.StaticBox(self, wx.ID_ANY, "Optional settings")
+        optional_settings = wx.StaticBoxSizer(optional_box, wx.HORIZONTAL)
+        optional_settings.Add(self.create_widget_box(spinner_settings), 2,
+                              wx.EXPAND)
+        checkbox_settings = [{"t": "Experimental dimer checking",
+                             "f": "dimer_check"},
+                             {"t": "Experimental self dimer checking",
+                             "f": "self_dimer_check"},
+                             {"t": "Experimental hairpin checking",
+                             "f": "hairpin_check"}]
+        checkbox_creator = lambda parent: wx.CheckBox(parent, wx.ID_ANY)
+        right_sizer = wx.BoxSizer(wx.VERTICAL)
+        optional_settings.Add(self.create_widget_box(checkbox_settings,
+                              checkbox_creator), 1, wx.EXPAND | wx.LEFT, 5)
+        return optional_settings
+
+    def create_widget_box(self, configuration, callable=default_spinner):
+        """ A method for easily creating a list of text - widget columns.
+        This is done with the configuration parameter which determines
+        the structure. It is aimed to either create spacers or widgets
+        defined by a settings dict.
+        The keys of a dictionary within the input settings:
+            t: The text which will show to the left of the spin button
+            f: The name of the field which would be set to the widget
+            on this object.
+        When f is not set, it will be considered as a spacer. The
+        actual widget which gets created is determined by the
+        callable parameter, which refers to a function which
+        creates a fresh widget.
+
+        Parameters:
+            configuration - A dictionary with the input settings.
+            callable - Creates a freshly initialised widget.
         Returns:
             A (new) BoxSizer which contains all the settings.
         """
-        input_settings = [{"t": "Max PCR product size", "s": "max_target",
-                          "sp": True}, {"t": "Range settings",
-                          "sp": False}, {"t": "Minimum", "s": "range_minimum",
-                          "sp": True}, {"t": "Maximum", "s": "range_maximum",
-                          "sp": True}]
         # Column for the text
         text_box = wx.BoxSizer(wx.VERTICAL)
         # Column for the actual input
-        spinner_box = wx.BoxSizer(wx.VERTICAL)
-        for input_setting in input_settings:
-            text = wx.StaticText(self, -1, input_setting["t"])
-            text_box.Add(text, 1, wx.ALIGN_LEFT)
-            spin = (0, 0)
+        widget_box = wx.BoxSizer(wx.VERTICAL)
+        for input_setting in configuration:
+            text = wx.StaticText(self, wx.ID_ANY, input_setting["t"])
+            horizontal_wrapper = wx.BoxSizer(wx.HORIZONTAL)
+            horizontal_wrapper.Add(text, 1, wx.ALIGN_CENTER)
+            text_box.Add(horizontal_wrapper, 1, wx.ALIGN_LEFT)
+            widget = (0, 0)
             # Add a spacer when this is shouldn't be a spinner
-            if input_setting["sp"]:
-                spin = wx.SpinCtrl(self, -1,
-                                   style=InputPanel.SPINNER_STYLE)
-                spin.SetRange(0, pow(2, 31) - 1)
-                setattr(self, input_setting["s"], spin)
-            spinner_box.Add(spin, 1, wx.EXPAND)
+            if "f" in input_setting:
+                widget = callable(self)
+                setattr(self, input_setting["f"], widget)
+            widget_box.Add(widget, 1, wx.ALIGN_RIGHT)
+        main_box = wx.BoxSizer(wx.HORIZONTAL)
         main_box.Add(text_box, 1, wx.EXPAND)
-        main_box.Add(spinner_box, 1, wx.EXPAND)
+        main_box.Add(widget_box, 1, wx.EXPAND)
         return main_box
