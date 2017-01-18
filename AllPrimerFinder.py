@@ -59,24 +59,31 @@ class AllPrimerFinder(PrimerFinder):
             link = dict(primer=primer_list[0])
             del primer_list[0]
 
-            link['end_primers'] = list(
+            link['rprimers'] = list(
                 filter(self.range_primer_filter(link['primer']),
                        primer_list))
             # Only when primers are available, add it to the links
-            if link['end_primers']:
+            if link['rprimers']:
                 links.append(link)
         return links
+
+    def set_primer_absolute_position(self, primer_obj):
+        start = self.anneal_minimum + primer_obj['offset'] + 1
+        end = start + len(primer_obj['seq'])
+        primer_obj['position'] = start, end
+        return start, end
 
     def find_primers(self):
         sequence = self.get_annealing_sequence()
         linked_primers = self.link_primers(self.find_all_primers(sequence))
         for linked in linked_primers:
-            offset = linked['primer']['offset']
-            for i in range(0, len(linked['end_primers'])):
-                linked['end_primers'][i] = dict(linked['end_primers'][i])
-                primer = linked['end_primers'][i]
+            self.set_primer_absolute_position(linked['primer'])
+            start_position = linked['primer']['position'][0]
+            for i in range(0, len(linked['rprimers'])):
+                # Hard copy
+                primer = linked['rprimers'][i] = dict(linked['rprimers'][i])
                 primer['seq'] = self.complement_sequence(primer['seq'])
-                primer['pcr'] = sequence[
-                    offset:primer['offset'] + len(primer['seq'])]
+                _, end = self.set_primer_absolute_position(primer)
+                primer['pcr'] = self.sequence[start_position:end]
                 del primer['offset']
             del linked['primer']['offset']
