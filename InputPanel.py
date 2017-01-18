@@ -239,7 +239,7 @@ class InputPanel(wx.Panel):
     def create_optional_input(self):
         """ Creates all the optional settings box which contains all
         optional settings. Those settings are created using
-        create_widget_box.
+        create_widget_box, except for the target checkbox.
 
         Parameters:
             -
@@ -251,8 +251,18 @@ class InputPanel(wx.Panel):
                             {"t": "Maximum", "f": "target_range_maximum"}]
         optional_box = wx.StaticBox(self, wx.ID_ANY, "Optional settings")
         optional_settings = wx.StaticBoxSizer(optional_box, wx.HORIZONTAL)
-        optional_settings.Add(self.create_widget_box(spinner_settings), 2,
-                              wx.EXPAND)
+        left_box = self.create_widget_box(spinner_settings)
+        # Add wrappers to add the target checkbox
+        entry_box = wx.BoxSizer(wx.HORIZONTAL)
+        entry_box.Add(wx.StaticText(self, wx.ID_ANY, "Use target"), wx.EXPAND)
+        self.use_target = wx.CheckBox(self, wx.ID_ANY)
+        entry_box.Add(self.use_target, wx.EXPAND)
+        # Wrap left box in a new vertical box
+        wrapper_box = wx.BoxSizer(wx.VERTICAL)
+        wrapper_box.Add(left_box, 1, wx.EXPAND)
+        wrapper_box.Add(entry_box, 1, wx.EXPAND)
+        # Add it to the main box
+        optional_settings.Add(wrapper_box, 1, wx.EXPAND)
         checkbox_settings = [{"t": "Experimental dimer checking",
                              "f": "dimer_check"},
                              {"t": "Experimental self dimer checking",
@@ -260,7 +270,6 @@ class InputPanel(wx.Panel):
                              {"t": "Experimental hairpin checking",
                              "f": "hairpin_check"}]
         checkbox_creator = lambda parent: wx.CheckBox(parent, wx.ID_ANY)
-        right_sizer = wx.BoxSizer(wx.VERTICAL)
         optional_settings.Add(self.create_widget_box(checkbox_settings,
                               checkbox_creator), 1, wx.EXPAND | wx.LEFT, 5)
         return optional_settings

@@ -24,7 +24,7 @@ class Frame(wx.Frame):
         Returns:
             -
         """
-        super(Frame, self).__init__(parent, id, title, size=(600, 265),
+        super(Frame, self).__init__(parent, id, title, size=(600, 285),
                                     style=(wx.MINIMIZE_BOX | wx.SYSTEM_MENU |
                                            wx.CLOSE_BOX | wx.CAPTION |
                                            wx.CLIP_CHILDREN))
