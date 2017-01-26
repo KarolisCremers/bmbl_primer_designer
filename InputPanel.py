@@ -155,9 +155,13 @@ class InputPanel(wx.Panel):
         the annealing range. Also limits the range of the target
         """
         self.skip_additional = True
-        minimum_range = self.anneal_range_minimum.GetValue()
-        maximum_range = self.anneal_range_maximum.GetValue()
-        self.max_pcr.SetRange(0, maximum_range - minimum_range)
+        anneal_range = (self.anneal_range_maximum.GetValue() -
+                        self.anneal_range_minimum.GetValue())
+        target_range = 0
+        if self.use_target.GetValue():
+            target_range = (self.target_range_maximum.GetValue() -
+                            self.target_range_minimum.GetValue())
+        self.max_pcr.SetRange(target_range, anneal_range)
         self.target_range_minimum.SetRange(minimum_range, maximum_range - 1)
         self.target_range_maximum.SetRange(minimum_range + 1, maximum_range)
         self.skip_additional = False

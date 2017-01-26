@@ -1,5 +1,7 @@
 import wx
 from InputPanel import InputPanel
+from AllPrimerFinder import AllPrimerFinder
+from TargetPrimerFinder import TargetPrimerFinder
 
 
 class Frame(wx.Frame):
@@ -29,8 +31,23 @@ class Frame(wx.Frame):
                                            wx.CLOSE_BOX | wx.CAPTION |
                                            wx.CLIP_CHILDREN))
         self.input_panel = InputPanel(self, wx.ID_ANY)
+        self.input_panel.Bind(wx.EVT_BUTTON, )
         self.Centre()
         self.Show(True)
+
+    def handle_primer_button(self, event):
+        arguments = [self.input_panel.create_primer_checker()]
+        for field in ('anneal_range_minimum', 'anneal_range_maximum',
+                      'max_pcr', 'target_range_minimum',
+                      'target_range_maximum'):
+            arguments.append(getattr(self.input_panel, field).GetValue())
+        if self.input_panel.use_target.GetValue():
+            finder = TargetPrimerFinder(*arguments)
+        else:
+            arguments = arguments[:-2]
+            finder = AllPrimerFinder(*arguments)
+        primers = finder.find_primers()
+        # TODO output screen
 
 
 if __name__ == '__main__':
