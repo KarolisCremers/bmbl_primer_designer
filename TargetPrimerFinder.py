@@ -8,8 +8,8 @@ class TargetPrimerFinder(PrimerFinder):
         super(TargetPrimerFinder, self).__init__(
             primer_checker, sequence, anneal_minimum, anneal_maximum,
             max_pcr_product)
-        self.target_minimum = target_minimum - 1
-        self.target_maximum = target_maximum - 1
+        self.target_minimum = target_minimum - anneal_minimum
+        self.target_maximum = target_maximum - anneal_minimum
 
     def find_primers(self):
         sequence = self.get_annealing_sequence()

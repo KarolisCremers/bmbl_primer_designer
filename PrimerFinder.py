@@ -34,8 +34,8 @@ class PrimerFinder(object):
         """
         self.primer_checker = primer_checker
         self.sequence = "".join(split("\s+", sequence.upper()))
-        self.anneal_minimum = anneal_minimum
-        self.anneal_maximum = anneal_maximum
+        self.anneal_minimum = anneal_minimum - 1
+        self.anneal_maximum = anneal_maximum - 1
         self.max_pcr_product = max_pcr_product
 
     def complement_sequence(self, sequence, flip_sequence=True):
