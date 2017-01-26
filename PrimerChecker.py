@@ -175,5 +175,5 @@ class PrimerChecker(object):
         if key[3:] in _check_methods:
             if (not self._internal_override and
                     not getattr(self, "check_" + key[3:])):
-                return lambda *x: True
+                return lambda *x: False
         return super(PrimerChecker, self).__getattribute__(key)

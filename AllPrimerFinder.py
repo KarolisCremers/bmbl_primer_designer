@@ -5,8 +5,8 @@ class AllPrimerFinder(PrimerFinder):
 
     def single_primer_filter(self, item):
         primer = item["seq"]
-        return (self.primer_checker.is_self_dimer(primer) and
-                self.primer_checker.is_hairpin(primer))
+        return (not self.primer_checker.is_self_dimer(primer) and
+                not self.primer_checker.is_hairpin(primer))
 
     def range_primer_filter(self, forward_primer):
         offset = forward_primer['offset']
@@ -87,3 +87,4 @@ class AllPrimerFinder(PrimerFinder):
                 primer['pcr'] = self.sequence[start_position:end]
                 del primer['offset']
             del linked['primer']['offset']
+        return linked_primers
