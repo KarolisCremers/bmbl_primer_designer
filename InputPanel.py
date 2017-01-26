@@ -95,6 +95,7 @@ class InputPanel(wx.Panel):
         self.target_range_maximum.Bind(
             wx.EVT_SPINCTRL, event_wrapper(self.range_handler,
                                            self.target_range_minimum, False))
+        self.use_target.Bind(wx.EVT_CHECKBOX, self.set_additional_widgets)
 
     def check_sequence(self, *args):
         """ Checks the sequence of the input field and removes unkown
@@ -150,7 +151,7 @@ class InputPanel(wx.Panel):
             self.dna_field.SetValue(text)
         wx.TheClipboard.Close()
 
-    def set_additional_widgets(self):
+    def set_additional_widgets(self, *args):
         """ Sets the maximum pcr product size according to the range of
         the annealing range. Also limits the range of the target
         """
@@ -161,7 +162,7 @@ class InputPanel(wx.Panel):
         if self.use_target.GetValue():
             target_range = (self.target_range_maximum.GetValue() -
                             self.target_range_minimum.GetValue())
-        self.max_pcr.SetRange(target_range, maximum_range - minimum_range)
+        self.max_pcr.SetRange(target_range, maximum_range)
         self.target_range_minimum.SetRange(minimum_range, maximum_range - 1)
         self.target_range_maximum.SetRange(minimum_range + 1, maximum_range)
         self.skip_additional = False
