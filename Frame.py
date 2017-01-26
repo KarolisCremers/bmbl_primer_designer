@@ -1,5 +1,6 @@
 import wx
 from InputPanel import InputPanel
+from ShowPanel import ShowPanel
 from AllPrimerFinder import AllPrimerFinder
 from TargetPrimerFinder import TargetPrimerFinder
 
@@ -31,7 +32,14 @@ class Frame(wx.Frame):
                                            wx.CLOSE_BOX | wx.CAPTION |
                                            wx.CLIP_CHILDREN))
         self.input_panel = InputPanel(self, wx.ID_ANY)
+        self.show_panel = ShowPanel(self, wx.ID_ANY)
         self.input_panel.Bind(wx.EVT_BUTTON, self.handle_primer_button)
+        # Set sizer
+        self.box = wx.BoxSizer(wx.HORIZONTAL)
+        self.box.Add(self.input_panel, 1, wx.EXPAND)
+        self.box.Add(self.show_panel, 1, wx.EXPAND)
+        self.SetSizer(self.box)
+        # Show it
         self.Centre()
         self.Show(True)
 
@@ -47,7 +55,10 @@ class Frame(wx.Frame):
             arguments = arguments[:-2]
             finder = AllPrimerFinder(*arguments)
         primers = finder.find_primers()
-        # TODO output screen
+        self.show_panel.set_primers(primers)
+        self.input_panel.Hide()
+        self.show_panel.Show()
+        self.Layout()
 
 
 if __name__ == '__main__':
