@@ -75,7 +75,6 @@ class PrimerChecker(object):
 
     def __getattribute__(self, key):
         if key[3:] in _check_methods:
-            print("Override: " + str(self._internal_override))
             if (not self._internal_override and
                     not getattr(self, "check_" + key[3:])):
                 return lambda *x: False

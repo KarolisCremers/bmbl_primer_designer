@@ -15,7 +15,7 @@ class PrimerFinder(object):
         complement_dict = dict(A='T', T='A', C='G', G='C')
         complement_seq = ""
         if flip_sequence:
-            sequence = reversed(seqeunce)
+            sequence = reversed(sequence)
         for nucleotide in sequence:
             complement_seq += complement_dict[nucleotide]
         return complement_seq
