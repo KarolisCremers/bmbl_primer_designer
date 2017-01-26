@@ -8,8 +8,8 @@ class TargetPrimerFinder(PrimerFinder):
         super(TargetPrimerFinder, self).__init__(
             primer_checker, sequence, anneal_minimum, anneal_maximum,
             max_pcr_product)
-        self.target_minimum = target_minimum - anneal_minimum
-        self.target_maximum = target_maximum - anneal_minimum
+        self.target_minimum = target_minimum - 1
+        self.target_maximum = target_maximum - 1
 
     def find_primers(self):
         sequence = self.get_annealing_sequence()
@@ -43,11 +43,10 @@ class TargetPrimerFinder(PrimerFinder):
                 primer.insert(position, 0)
                 primer.append(gc_percentage)
                 primer.append(melt_temperature)
-                if 50 <= gc_perc <= 60 and 55 <= melting_temp <= 65:
+                if 50 <= gc_percentage <= 60 and 55 <= melt_temperature <= 65:
                         primers.append(primer)
-            if not primers:
                 primer_length += 1
-        primers = sort(primers)
+        primers = sorted(primers)
         return primers
 
     def dimer_hairpin_checker(self, forward_primer, reverse_primer):
