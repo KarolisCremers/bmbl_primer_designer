@@ -9,7 +9,10 @@ class PrimerFinder(object):
     The method `find_primers` should be considered as a main method.
     This should return a list of results which look like the
     following structure:
-    TODO
+    {
+        "primer": // Forward primer
+        "rprimers": // reverse primers (list)
+    }
     """
 
     def __init__(self, primer_checker, sequence, anneal_minimum,

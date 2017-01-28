@@ -6,13 +6,9 @@ from TargetPrimerFinder import TargetPrimerFinder
 
 class Frame(wx.Frame):
     """ The frame contains the panels which show the input settings and
-    result dialogs. It is the main class which handles all the events
-    of both dialogs. The most code found in this class is related to
-    the input dialog, since those spinners and the text field need to
-    be handled properly. More importantly, the values of those settings
-    must be shared because the 'xxxx.py' file needs those to actually
-    find proper primers. After that, the results must be shown on the
-    result screen.
+    result dialogs. This is the main class which handles the hiding and
+    showing of panels. As a result of this, it handles the buttons of
+    the panels which should do this.
     """
 
     def __init__(self, parent, id, title):
@@ -36,6 +32,12 @@ class Frame(wx.Frame):
         self.Show(True)
 
     def handle_primer_button(self, event):
+        """ Handles the event of the Search primers button. This will
+        collect all the arguments required for AllPrimerFinder and
+        TargetPrimerFinder and will create the correct object according
+        to the use_target checkbox; this checkbox defines whether to
+        use the target range or not.
+        """
         arguments = [self.input_panel.create_primer_checker()]
         for field in ('dna_field', 'anneal_range_minimum',
                       'anneal_range_maximum', 'max_pcr',

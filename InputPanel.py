@@ -18,6 +18,7 @@ def event_wrapper(func, *args, **kwargs):
 
 
 def default_spinner(parent):
+    """ Creates the default spinner in create_widget_box """
     spin = wx.SpinCtrl(parent, wx.ID_ANY,
                        style=InputPanel.SPINNER_STYLE)
     spin.SetRange(0, 0)
