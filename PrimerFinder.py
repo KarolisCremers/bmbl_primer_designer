@@ -69,7 +69,7 @@ class PrimerFinder(object):
         Returns:
             The sequence which primers can anneal to.
         """
-        return self.sequence[self.anneal_minimum - 1:self.anneal_maximum - 1]
+        return self.sequence[self.anneal_minimum:self.anneal_maximum]
 
     def find_primers(self):
         """ The main method which searches for the primers for this class """

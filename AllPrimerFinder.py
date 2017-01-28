@@ -131,6 +131,7 @@ class AllPrimerFinder(PrimerFinder):
         start = self.anneal_minimum + primer_obj['offset'] + 1
         end = start + len(primer_obj['seq'])
         primer_obj['position'] = start, end
+        del primer_obj['offset']
         return start, end
 
     def find_primers(self):
@@ -142,9 +143,7 @@ class AllPrimerFinder(PrimerFinder):
             for i in range(0, len(linked['rprimers'])):
                 # Hard copy
                 primer = linked['rprimers'][i] = dict(linked['rprimers'][i])
-                primer['seq'] = self.complement_sequence(primer['seq'])
+                primer['seq'] = self.complement_sequence(primer['seq'], False)
                 _, end = self.set_primer_absolute_position(primer)
                 primer['pcr'] = self.sequence[start_position:end]
-                del primer['offset']
-            del linked['primer']['offset']
         return linked_primers
