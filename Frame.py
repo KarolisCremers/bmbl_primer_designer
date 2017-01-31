@@ -1,5 +1,6 @@
 import wx
 from InputPanel import InputPanel
+from ShowPanel import ShowPanel
 from AllPrimerFinder import AllPrimerFinder
 from TargetPrimerFinder import TargetPrimerFinder
 
@@ -27,9 +28,21 @@ class Frame(wx.Frame):
                                            wx.CLOSE_BOX | wx.CAPTION |
                                            wx.CLIP_CHILDREN))
         self.input_panel = InputPanel(self, wx.ID_ANY)
-        self.input_panel.Bind(wx.EVT_BUTTON, self.handle_primer_button)
+        self.input_panel.primers_button.Bind(wx.EVT_BUTTON,
+                                             self.handle_primer_button)
+        self.show_panel = ShowPanel(self, wx.ID_ANY)
+        self.show_panel.return_button.Bind(wx.EVT_BUTTON, self.handle_return)
+        wrapper_box = wx.BoxSizer(wx.VERTICAL)
+        wrapper_box.Add(self.input_panel, 1, wx.EXPAND)
+        wrapper_box.Add(self.show_panel, 1, wx.EXPAND)
+        self.SetSizer(wrapper_box)
         self.Centre()
         self.Show(True)
+
+    def handle_return(self, event):
+        self.show_panel.Hide()
+        self.input_panel.Show()
+        self.Layout()
 
     def handle_primer_button(self, event):
         """ Handles the event of the Search primers button. This will
@@ -48,8 +61,10 @@ class Frame(wx.Frame):
         else:
             arguments = arguments[:-2]
             finder = AllPrimerFinder(*arguments)
-        primers = finder.find_primers()
-        # TODO output screen
+        self.show_panel.set_primer(finder.find_primers())
+        self.input_panel.Hide()
+        self.show_panel.Show()
+        self.Layout()
 
 
 if __name__ == '__main__':

@@ -20,23 +20,27 @@ class TargetPrimerFinder(PrimerFinder):
                                     self.target_maximum))
         forward_primers = self.primer_search(forward_primer_region)
         reverse_primers = self.primer_search(reverse_primer_region)
+        # Set correct offset
+        for rprimer in reverse_primers:
+            rprimer["offset"] = len(sequence) - rprimer["offset"]
+            self.set_primer_absolute_position(rprimer)
         primer_pairs = []
         for forward_primer in forward_primers:
             position_forward = forward_primer["offset"]
+            self.set_primer_absolute_position(forward_primer)
             for reverse_primer in reverse_primers:
                 if self.primer_checker.is_dimer(forward_primer['seq'],
                                                 reverse_primer['seq']):
                     continue
                 rprimer = dict(reverse_primer)
                 rprimer["seq"] = rprimer["seq"][::-1]
-                position_reverse = reverse_primer["offset"]
-                pcr_product = ((len(sequence) - position_reverse) -
-                                position_forward)
+                position_reverse = reverse_primer["position"][0]
+                pcr_product = position_reverse - position_forward
                 if pcr_product <= self.max_pcr_product:
+                    end = reverse_primer["position"][1]
                     primer_pairs.append(
                         dict(fprimer=forward_primer, rprimer=rprimer,
-                             pcr=sequence[position_forward:position_forward +
-                                          pcr_product]))
+                             pcr=sequence[position_forward:end]))
         primer_pairs.sort(key=lambda i: len(i["pcr"]))
         return primer_pairs[0] if primer_pairs else None
 

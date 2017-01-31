@@ -114,19 +114,6 @@ class AllPrimerFinder(PrimerFinder):
                 if primer_filter(rprimer):
                     return {'fprimer': forward_primer, 'rprimer': primers[i]}
 
-    def set_primer_absolute_position(self, primer_obj):
-        """ Calculates the absolute position for a primer object.
-        Parameters:
-            primer_obj - The primer obj to calculate for.
-        Returns:
-            A tuple with the start and end integer.
-        """
-        start = self.anneal_minimum + primer_obj['offset'] + 1
-        end = start + len(primer_obj['seq'])
-        primer_obj['position'] = start, end
-        del primer_obj['offset']
-        return start, end
-
     def find_primers(self):
         sequence = self.get_annealing_sequence()
         primers = self.find_all_primers(sequence)

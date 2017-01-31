@@ -72,6 +72,21 @@ class PrimerFinder(object):
         """
         return self.sequence[self.anneal_minimum:self.anneal_maximum]
 
+    def set_primer_absolute_position(self, primer_obj):
+        """ Calculates the absolute position for a primer object.
+        Parameters:
+            primer_obj - The primer obj to calculate for.
+        Returns:
+            A tuple with the start and end integer.
+        """
+        if 'offset' not in primer_obj:
+            return primer_obj['position']
+        start = self.anneal_minimum + primer_obj['offset'] + 1
+        end = start + len(primer_obj['seq'])
+        primer_obj['position'] = start, end
+        del primer_obj['offset']
+        return start, end
+
     def find_primers(self):
         """ The main method which searches for the primers for this class """
         raise NotImplementedError
