@@ -27,12 +27,14 @@ class TargetPrimerFinder(PrimerFinder):
                 if self.primer_checker.is_dimer(forward_primer['seq'],
                                                 reverse_primer['seq']):
                     continue
+                rprimer = dict(reverse_primer)
+                rprimer["seq"] = rprimer["seq"][::-1]
                 position_reverse = reverse_primer["offset"]
                 pcr_product = ((len(sequence) - position_reverse) -
                                 position_forward)
                 if pcr_product <= self.max_pcr_product:
                     primer_pairs.append(
-                        dict(fprimer=forward_primer, rprimer=reverse_primer,
+                        dict(fprimer=forward_primer, rprimer=rprimer,
                              pcr=sequence[position_forward:position_forward +
                                           pcr_product]))
         primer_pairs.sort(key=lambda i: len(i["pcr"]))
