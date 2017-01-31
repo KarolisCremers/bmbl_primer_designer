@@ -20,7 +20,7 @@ class PrimerChecker(object):
 
     complement_dict = dict(A='T', T='A', C='G', G='C')
 
-    def __init__(self, required_bonds=3, dimer=True, self_dimer=True,
+    def __init__(self, required_bonds=6, dimer=True, self_dimer=True,
                  hairpin=True):
         """ This method will configure whether methods are enabled
         (True) or disabled (False). When a method is disabled, the
@@ -126,7 +126,7 @@ class PrimerChecker(object):
             (False).
         """
         self._internal_override = True
-        output = self.is_dimer(primer, primer, required_bonds)
+        output = self.is_dimer(primer, primer)
         self._internal_override = False
         return output
 

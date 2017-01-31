@@ -10,8 +10,9 @@ class PrimerFinder(object):
     This should return a list of results which look like the
     following structure:
     {
-        "primer": // Forward primer
-        "rprimers": // reverse primers (list)
+        "fprimer": // Forward primer
+        "rprimer": // reverse primer
+        "pcr": // The PCR product
     }
     """
 
@@ -38,7 +39,7 @@ class PrimerFinder(object):
         self.primer_checker = primer_checker
         self.sequence = "".join(split("\s+", sequence.upper()))
         self.anneal_minimum = anneal_minimum - 1
-        self.anneal_maximum = anneal_maximum - 1
+        self.anneal_maximum = anneal_maximum
         self.max_pcr_product = max_pcr_product
 
     def complement_sequence(self, sequence, flip_sequence=True):

@@ -1,7 +1,9 @@
 from PrimerFinder import PrimerFinder
+import time
 
 
 class TargetPrimerFinder(PrimerFinder):
+
     def __init__(self, primer_checker, sequence, anneal_minimum,
                  anneal_maximum, max_pcr_product, target_minimum,
                  target_maximum):
@@ -20,50 +22,39 @@ class TargetPrimerFinder(PrimerFinder):
         reverse_primers = self.primer_search(reverse_primer_region)
         primer_pairs = []
         for forward_primer in forward_primers:
-            position_forward = forward_primer[0]
+            position_forward = forward_primer["offset"]
             for reverse_primer in reverse_primers:
-                position_reverse = reverse_primer[0]
+                if self.primer_checker.is_dimer(forward_primer['seq'],
+                                                reverse_primer['seq']):
+                    continue
+                position_reverse = reverse_primer["offset"]
                 pcr_product = ((len(sequence) - position_reverse) -
                                 position_forward)
-                if pcr_product < max_pcr_product:
-                    primer_pairs.append([pcr_product, forward_primer,
-                                         reverse_primer])
-        primer_pairs.sort()
-        return primer_pairs
+                if pcr_product <= self.max_pcr_product:
+                    primer_pairs.append(
+                        dict(fprimer=forward_primer, rprimer=reverse_primer,
+                             pcr=sequence[position_forward:position_forward +
+                                          pcr_product]))
+        primer_pairs.sort(key=lambda i: len(i["pcr"]))
+        return primer_pairs[0] if primer_pairs else None
 
     def primer_search(self, primer_region):
         primers = []
         primer_length = 17
         while primer_length <= 30:
             for position in range(0, len(primer_region)):
-                primer = []
-                gc_percentage, \
-                melt_temperature = self.primer_checker.calc_primer_details(
-                    primer_region[:(position + primer_length)])
-                primer.insert(position, 0)
-                primer.append(gc_percentage)
-                primer.append(melt_temperature)
-                if 50 <= gc_percentage <= 60 and 55 <= melt_temperature <= 65:
-                        primers.append(primer)
-                primer_length += 1
-        primers = sorted(primers)
+                primer_seq = primer_region[position:(position + primer_length)]
+                gc_percentage, melt_temperature = (
+                    self.primer_checker.calc_primer_details(primer_seq))
+                if (50 <= gc_percentage <= 60 and
+                    55 <= melt_temperature <= 65 and
+                    not self.primer_checker.is_hairpin(primer_seq) and
+                    not self.primer_checker.is_self_dimer(primer_seq)):
+                    primers.append(dict(offset=position, seq=primer_seq,
+                                        gc_perc=gc_percentage,
+                                        melt_temp=melt_temperature))
+            primer_length += 1
         return primers
-
-    def dimer_hairpin_checker(self, forward_primer, reverse_primer):
-        cross_dimer = self.dimer_checker.is_dimer(forward_primer,
-                                                  reverse_primer)
-        self_dimer_forward = self.dimer_checker.is_self_dimer(
-            forward_primer)
-        self_dimer_reverse = self.dimer_checker.is_self_dimer(
-            reverse_primer)
-        hairpin_forward = self.dimer_checker.is_hairpin(forward_primer)
-        hairpin_reverse = self.dimer_checker.is_hairpin(reverse_primer)
-        if cross_dimer or self_dimer_forward or self_dimer_reverse or \
-                hairpin_forward or hairpin_reverse:
-            unvalid_primer = True
-        else:
-            unvalid_primer = False
-        return unvalid_primer
 
     def find_primer_region(self, input_sequence, target_minimum,
                            target_maximum):

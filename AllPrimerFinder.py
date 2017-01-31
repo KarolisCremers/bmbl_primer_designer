@@ -69,7 +69,7 @@ class AllPrimerFinder(PrimerFinder):
         found_primers = []
         primer_tracker = set()
         # Keep looping until we cannot find primers
-        while len(sequence[offset:]) >= offset + 17:
+        while len(sequence[offset:]) >= 17:
             current_region = sequence[offset:]
             offset += 1
             # check multiple primer lengths
@@ -94,32 +94,25 @@ class AllPrimerFinder(PrimerFinder):
                                               offset=offset - 1))
         return list(filter(self.single_primer_filter, found_primers))
 
-    def link_primers(self, primer_list):
-        """ Tries to find all forward primer, reverse primer
-        combinations. When those reverse primers are found for a
-        forward primer, a few checks will be done by the
-        range_primer_filter. Those links are only added when actual
-        links between a forward primer and reverse primer exist.
+    def find_best_match(self, primers):
+        """ Finds the best match of primers which have the biggest PCR product
+        within the anneal region.
 
         Parameters:
-            primer_list - A list of available primers.
+            primer - A list of found primers
         Returns:
-            A list of dictionaries with all the link dictionaries. The
-            primer key is the forward primer and the rprimers key is a
-            list of reverse primers.
+            A dictionary with the forward primer and reverse primer or None
+            when no combination is found.
         """
-        links = []
-        for _ in range(0, len(primer_list)):
-            link = dict(primer=primer_list[0])
-            del primer_list[0]
-
-            link['rprimers'] = list(
-                filter(self.range_primer_filter(link['primer']),
-                       primer_list))
-            # Only when primers are available, add it to the links
-            if link['rprimers']:
-                links.append(link)
-        return links
+        for _ in range(0, len(primers)):
+            forward_primer = primers[0]
+            del primers[0]
+            primer_filter = self.range_primer_filter(forward_primer)
+            for i in range(len(primers) - 1, -1, -1):
+                rprimer = dict(primers[i])
+                rprimer['seq'] = self.complement_sequence(rprimer['seq'])
+                if primer_filter(rprimer):
+                    return {'fprimer': forward_primer, 'rprimer': primers[i]}
 
     def set_primer_absolute_position(self, primer_obj):
         """ Calculates the absolute position for a primer object.
@@ -136,14 +129,14 @@ class AllPrimerFinder(PrimerFinder):
 
     def find_primers(self):
         sequence = self.get_annealing_sequence()
-        linked_primers = self.link_primers(self.find_all_primers(sequence))
-        for linked in linked_primers:
-            self.set_primer_absolute_position(linked['primer'])
-            start_position = linked['primer']['position'][0]
-            for i in range(0, len(linked['rprimers'])):
-                # Hard copy
-                primer = linked['rprimers'][i] = dict(linked['rprimers'][i])
-                primer['seq'] = self.complement_sequence(primer['seq'], False)
-                _, end = self.set_primer_absolute_position(primer)
-                primer['pcr'] = self.sequence[start_position:end]
-        return linked_primers
+        primers = self.find_all_primers(sequence)
+        match = self.find_best_match(primers)
+        if match:
+            start_forward = (
+                self.set_primer_absolute_position(match['fprimer'])[0])
+            end_reverse = (
+                self.set_primer_absolute_position(match['rprimer'])[1])
+            match['pcr'] = self.sequence[start_forward:end_reverse]
+            match['rprimer']['seq'] = self.complement_sequence(
+                match['rprimer']['seq'], False)
+        return match
