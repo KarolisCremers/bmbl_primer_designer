@@ -14,6 +14,15 @@ class TargetPrimerFinder(PrimerFinder):
         self.target_maximum = target_maximum - anneal_minimum
 
     def find_primers(self):
+        """
+        This function finds primer pairs that are within the
+        maximum PCR product range. Also it is possible
+        to filter the primers with dimers thru
+        self.primer_checker.is_dimer.
+        :return: This function returns the primers
+        whith the smallest product, or if no primer pairs are found
+        it wil return None.
+        """
         sequence = self.get_annealing_sequence()
         forward_primer_region, reverse_primer_region = (
             self.find_primer_region(sequence, self.target_minimum,
@@ -45,6 +54,16 @@ class TargetPrimerFinder(PrimerFinder):
         return primer_pairs[0] if primer_pairs else None
 
     def primer_search(self, primer_region):
+        """
+        This function finds primers within primer_region, these
+        primers can be located at the same position but have
+        a different length.
+        :param primer_region is the sequence wherein the primers
+        are found.:
+        :return: This function returns a list of primers with
+        their relative position in primer_region, GC percantage
+        and melting temperature.
+        """
         primers = []
         primer_length = 17
         while primer_length <= 30:
@@ -64,16 +83,17 @@ class TargetPrimerFinder(PrimerFinder):
 
     def find_primer_region(self, input_sequence, target_minimum,
                            target_maximum):
-        '''
+        """
+        This function splits the input_sequence into two parts
+        that are used to find primers.
         :param input_sequence is the annealing sequence:
         :param target_minimum is the start position of the target
         sequence in the annealing sequence:
         :param target_maximum is the end position of the target
         sequence in the annealing sequence:
-        In this function are the primer regions ,wherein the primers
-        can be found, created by taking the
-        :return:
-        '''
+        :return: This function returns the strings
+        forwar_primer_region and reverse_prime_region.
+        """
         reverse_sequence = self.complement_sequence(input_sequence)
         forward_primer_region = input_sequence[:target_minimum + 17]
         reverse_primer_region = reverse_sequence[:(len(
