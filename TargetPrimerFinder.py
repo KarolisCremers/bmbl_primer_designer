@@ -1,5 +1,4 @@
 from PrimerFinder import PrimerFinder
-import time
 
 
 class TargetPrimerFinder(PrimerFinder):
@@ -14,14 +13,13 @@ class TargetPrimerFinder(PrimerFinder):
         self.target_maximum = target_maximum - anneal_minimum
 
     def find_primers(self):
-        """
-        This function finds primer pairs that are within the
-        maximum PCR product range. Also it is possible
-        to filter the primers with dimers thru
-        self.primer_checker.is_dimer.
-        :return: This function returns the primers
-        whith the smallest product, or if no primer pairs are found
-        it wil return None.
+        """ This function finds primer pairs that are within the
+        maximum PCR product range. Also it is possible to filter the
+        primers with dimers through self.primer_checker.is_dimer.
+
+        Returns:
+            The primers with the smallest PCR product, or if None when
+            no primer pairs are found.
         """
         sequence = self.get_annealing_sequence()
         forward_primer_region, reverse_primer_region = (
@@ -54,15 +52,15 @@ class TargetPrimerFinder(PrimerFinder):
         return primer_pairs[0] if primer_pairs else None
 
     def primer_search(self, primer_region):
-        """
-        This function finds primers within primer_region, these
-        primers can be located at the same position but have
-        a different length.
-        :param primer_region is the sequence wherein the primers
-        are found.:
-        :return: This function returns a list of primers with
-        their relative position in primer_region, GC percantage
-        and melting temperature.
+        """ This function finds primers within primer_region, which can
+        be located on the same position and differ in length.
+
+        Parameters:
+            primer_region - The sequence to find primers in
+        Returns:
+            This function returns a list of primers with their relative
+            position in primer_region, GC percantage and melting
+            temperature.
         """
         primers = []
         primer_length = 17
@@ -83,16 +81,16 @@ class TargetPrimerFinder(PrimerFinder):
 
     def find_primer_region(self, input_sequence, target_minimum,
                            target_maximum):
-        """
-        This function splits the input_sequence into two parts
+        """ This function splits the input_sequence into two parts
         that are used to find primers.
-        :param input_sequence is the annealing sequence:
-        :param target_minimum is the start position of the target
-        sequence in the annealing sequence:
-        :param target_maximum is the end position of the target
-        sequence in the annealing sequence:
-        :return: This function returns the strings
-        forwar_primer_region and reverse_prime_region.
+        Parameters:
+            input_sequence - The annealing sequence
+            target_minimum - The start position of the target sequence
+            in the annealing sequence
+            target_maximum - The end position of the target sequence in
+            then annealing sequence
+        Returns:
+            A forward primer region and reverse primer region
         """
         reverse_sequence = self.complement_sequence(input_sequence)
         forward_primer_region = input_sequence[:target_minimum + 17]
