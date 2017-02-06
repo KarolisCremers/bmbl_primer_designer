@@ -6,8 +6,10 @@ De benodigdheden om dit programma te runnen is de volgende software:
 * Wx python
 
 Op windows is dit eenvoudig te installeren door eerst python 2 te installeren met behulp van het bestand op de volgende link:
+https://www.python.org/downloads/ 
 
-Vervolgens moet wx Python geïnstalleerd worden, wat gedownload kan worden vanaf onderstaande link.
+Vervolgens moet wx Python geïnstalleerd worden, wat gedownload kan worden vanaf onderstaande link:
+https://wxpython.org/download.php
 
 Let hierbij op bij het installeren dat dit in de map geïnstalleerd moet worden van Python 2, welke dus is ingegeven bij de installatie van python 2.
 
