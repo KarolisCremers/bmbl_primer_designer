@@ -107,3 +107,13 @@ In deze volgorde zijn de instellingen gedaan:
 4. De target range instellen van 30 tot 90.
 5. Wederom alle experimentele checks aanvinken, want controlestappen zijn meestal goed.
 6. Search primers!
+
+            +---------------------------+--------------------------+
+            | Forward primer            | Reverse primer           |
++-----------+---------------------------+--------------------------+
+|Sequence:  |                           |                          |
+|Melt temp: |                           |                          |
+|GC%:       |                           |                          |
+|Position:  |                           |                          |
+|PCR:       |                           |                          |
++-----------+---------------------------+--------------------------+
