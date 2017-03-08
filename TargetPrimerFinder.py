@@ -64,7 +64,7 @@ class TargetPrimerFinder(PrimerFinder):
         """
         primers = []
         primer_length = 17
-        while primer_length <= 30:
+        while primer_length <= 31:
             for position in range(0, len(primer_region)):
                 primer_seq = primer_region[position:(position + primer_length)]
                 gc_percentage, melt_temperature = (

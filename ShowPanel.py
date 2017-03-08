@@ -13,8 +13,6 @@ class ShowPanel(wx.Panel):
 
         super(ShowPanel, self).__init__(parent, id)
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.main_sizer.Add((0, 0), 1, wx.EXPAND)
-        self.main_sizer.Add((0, 0), 1, wx.EXPAND)
         self.return_button = wx.Button(self, wx.ID_ANY,
                                        label="Return to settings")
         self.main_sizer.Add(self.return_button, 1, wx.EXPAND)
@@ -28,8 +26,6 @@ class ShowPanel(wx.Panel):
         Parameters:
              primer_match - The match object to get the primers from
         """
-        self.main_sizer.Remove(1)
-        self.main_sizer.Remove(0)
         if primer_match:
             title_box = wx.BoxSizer(wx.VERTICAL)
             for text in "", "Sequence:", "Melt temp:", "GC%:", "Position:":

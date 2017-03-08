@@ -30,12 +30,10 @@ class Frame(wx.Frame):
         self.input_panel = InputPanel(self, wx.ID_ANY)
         self.input_panel.primers_button.Bind(wx.EVT_BUTTON,
                                              self.handle_primer_button)
-        self.show_panel = ShowPanel(self, wx.ID_ANY)
-        self.show_panel.return_button.Bind(wx.EVT_BUTTON, self.handle_return)
-        wrapper_box = wx.BoxSizer(wx.VERTICAL)
-        wrapper_box.Add(self.input_panel, 1, wx.EXPAND)
-        wrapper_box.Add(self.show_panel, 1, wx.EXPAND)
-        self.SetSizer(wrapper_box)
+        self.show_panel = 0
+        self.wrapper_box = wx.BoxSizer(wx.VERTICAL)
+        self.wrapper_box.Add(self.input_panel, 1, wx.EXPAND)
+        self.SetSizer(self.wrapper_box)
         self.Centre()
         self.Show(True)
 
@@ -61,10 +59,19 @@ class Frame(wx.Frame):
         else:
             arguments = arguments[:-2]
             finder = AllPrimerFinder(*arguments)
+        self.create_show_panel()
         self.show_panel.set_primer(finder.find_primers())
         self.input_panel.Hide()
         self.show_panel.Show()
         self.Layout()
+
+    def create_show_panel(self):
+        if self.show_panel:
+            self.wrapper_box.Remove(self.show_panel)
+        self.show_panel = ShowPanel(self, wx.ID_ANY)
+        self.show_panel.return_button.Bind(wx.EVT_BUTTON, self.handle_return)
+        self.wrapper_box.Add(self.show_panel, 1, wx.EXPAND)
+
 
 
 if __name__ == '__main__':

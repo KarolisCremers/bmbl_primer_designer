@@ -119,6 +119,7 @@ class InputPanel(wx.Panel):
             length_seq = len(sequence)
             self.anneal_range_minimum.SetRange(1, length_seq - 1)
             self.anneal_range_maximum.SetRange(2, length_seq)
+            self.max_pcr.SetRange(1, length_seq)
             self.set_additional_widgets()
             return True
         else:
@@ -159,11 +160,6 @@ class InputPanel(wx.Panel):
         self.skip_additional = True
         minimum_range = self.anneal_range_minimum.GetValue()
         maximum_range = self.anneal_range_maximum.GetValue()
-        target_range = 0
-        if self.use_target.GetValue():
-            target_range = (self.target_range_maximum.GetValue() -
-                            self.target_range_minimum.GetValue())
-        self.max_pcr.SetRange(target_range, maximum_range)
         self.target_range_minimum.SetRange(minimum_range, maximum_range - 1)
         self.target_range_maximum.SetRange(minimum_range + 1, maximum_range)
         self.skip_additional = False
