@@ -54,11 +54,8 @@ class Frame(wx.Frame):
                       'anneal_range_maximum', 'max_pcr',
                       'target_range_minimum', 'target_range_maximum'):
             arguments.append(getattr(self.input_panel, field).GetValue())
-        if self.input_panel.use_target.GetValue():
-            finder = TargetPrimerFinder(*arguments)
-        else:
-            arguments = arguments[:-2]
-            finder = AllPrimerFinder(*arguments)
+        arguments.append(self.input_panel.use_target.GetValue())
+        finder = AllPrimerFinder(*arguments)
         self.create_show_panel()
         self.show_panel.set_primer(finder.find_primers())
         self.input_panel.Hide()
@@ -71,7 +68,6 @@ class Frame(wx.Frame):
         self.show_panel = ShowPanel(self, wx.ID_ANY)
         self.show_panel.return_button.Bind(wx.EVT_BUTTON, self.handle_return)
         self.wrapper_box.Add(self.show_panel, 1, wx.EXPAND)
-
 
 
 if __name__ == '__main__':

@@ -94,6 +94,20 @@ class AllPrimerFinder(PrimerFinder):
                                               offset=offset - 1))
         return list(filter(self.single_primer_filter, found_primers))
 
+
+    def check_target_range(self, fprimer, rprimer):
+        end_forward = (
+            self.set_primer_absolute_position(match['fprimer'])[0])
+        start_reverse = (
+            self.set_primer_absolute_position(match['rprimer'])[1])
+        if end_forward < self.target_minimum and start_reverse > \
+                self.target_maximum: #checks if the primers are outside the
+            # PCR product.
+            return True
+        else:
+            return False
+
+
     def find_best_match(self, primers):
         """ Finds the best match of primers which have the biggest PCR product
         within the anneal region.
@@ -112,7 +126,13 @@ class AllPrimerFinder(PrimerFinder):
                 rprimer = dict(primers[i])
                 rprimer['seq'] = self.complement_sequence(rprimer['seq'])
                 if primer_filter(rprimer):
+                    if self.target_region_option: # boolean if a specific
+                        # target range must be found
+                        if self.check_target_range(forward_primer, rprimer):
+                            return {'fprimer': forward_primer, 'rprimer':
+                                primers[i]}
                     return {'fprimer': forward_primer, 'rprimer': primers[i]}
+
 
     def find_primers(self):
         sequence = self.get_annealing_sequence()

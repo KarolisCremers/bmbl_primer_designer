@@ -93,7 +93,7 @@ class TargetPrimerFinder(PrimerFinder):
             A forward primer region and reverse primer region
         """
         reverse_sequence = self.complement_sequence(input_sequence)
-        forward_primer_region = input_sequence[:target_minimum + 17]
+        forward_primer_region = input_sequence[:target_minimum]
         reverse_primer_region = reverse_sequence[:(len(
             input_sequence) - target_maximum)]
         return forward_primer_region, reverse_primer_region
