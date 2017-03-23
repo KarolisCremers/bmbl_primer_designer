@@ -3,6 +3,17 @@ from PrimerFinder import PrimerFinder
 
 class AllPrimerFinder(PrimerFinder):
 
+    def __init__(self, primer_checker, sequence, anneal_minimum,
+                 anneal_maximum, max_pcr_product, target_minimum,
+                 target_maximum, target_region_option):
+        super(AllPrimerFinder, self).__init__(
+            primer_checker, sequence, anneal_minimum, anneal_maximum,
+            max_pcr_product)
+        self.target_minimum = target_minimum - anneal_minimum
+        self.target_maximum = target_maximum - anneal_minimum
+        self.target_region_option = target_region_option
+
+
     def single_primer_filter(self, item):
         """ This filter will be used to filter out primers which are
         not capable of being a primer. A self dimer or hairpin is not
@@ -97,9 +108,9 @@ class AllPrimerFinder(PrimerFinder):
 
     def check_target_range(self, fprimer, rprimer):
         end_forward = (
-            self.set_primer_absolute_position(match['fprimer'])[0])
+            self.set_primer_absolute_position(fprimer)[1])
         start_reverse = (
-            self.set_primer_absolute_position(match['rprimer'])[1])
+            self.set_primer_absolute_position(rprimer)[0])
         if end_forward < self.target_minimum and start_reverse > \
                 self.target_maximum: #checks if the primers are outside the
             # PCR product.
@@ -131,7 +142,9 @@ class AllPrimerFinder(PrimerFinder):
                         if self.check_target_range(forward_primer, rprimer):
                             return {'fprimer': forward_primer, 'rprimer':
                                 primers[i]}
-                    return {'fprimer': forward_primer, 'rprimer': primers[i]}
+                    else:
+                        return {'fprimer': forward_primer, 'rprimer':
+                            primers[i]}
 
 
     def find_primers(self):
