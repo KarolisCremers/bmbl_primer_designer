@@ -84,7 +84,6 @@ class PrimerFinder(object):
         start = self.anneal_minimum + primer_obj['offset'] + 1
         end = start + len(primer_obj['seq'])
         primer_obj['position'] = start, end
-        del primer_obj['offset']
         return start, end
 
     def find_primers(self):

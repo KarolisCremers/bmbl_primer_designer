@@ -3,17 +3,6 @@ from PrimerFinder import PrimerFinder
 
 class AllPrimerFinder(PrimerFinder):
 
-    def __init__(self, primer_checker, sequence, anneal_minimum,
-                 anneal_maximum, max_pcr_product, target_minimum,
-                 target_maximum, target_region_option):
-        super(AllPrimerFinder, self).__init__(
-            primer_checker, sequence, anneal_minimum, anneal_maximum,
-            max_pcr_product)
-        self.target_minimum = target_minimum - anneal_minimum
-        self.target_maximum = target_maximum - anneal_minimum
-        self.target_region_option = target_region_option
-
-
     def single_primer_filter(self, item):
         """ This filter will be used to filter out primers which are
         not capable of being a primer. A self dimer or hairpin is not
@@ -25,6 +14,7 @@ class AllPrimerFinder(PrimerFinder):
             A boolean whether this primer can pass (True) or not(False)
         """
         primer = item["seq"]
+        self.set_primer_absolute_position(item)
         return (not self.primer_checker.is_self_dimer(primer) and
                 not self.primer_checker.is_hairpin(primer))
 
@@ -84,7 +74,7 @@ class AllPrimerFinder(PrimerFinder):
             current_region = sequence[offset:]
             offset += 1
             # check multiple primer lengths
-            for primer_length in range(17, min(31, len(current_region))):
+            for primer_length in range(17, min(30, len(current_region))):
                 primer = current_region[:primer_length]
                 # Check for duplicates
                 if primer in primer_tracker:
@@ -105,20 +95,6 @@ class AllPrimerFinder(PrimerFinder):
                                               offset=offset - 1))
         return list(filter(self.single_primer_filter, found_primers))
 
-
-    def check_target_range(self, fprimer, rprimer):
-        end_forward = (
-            self.set_primer_absolute_position(fprimer)[1])
-        start_reverse = (
-            self.set_primer_absolute_position(rprimer)[0])
-        if end_forward < self.target_minimum and start_reverse > \
-                self.target_maximum: #checks if the primers are outside the
-            # PCR product.
-            return True
-        else:
-            return False
-
-
     def find_best_match(self, primers):
         """ Finds the best match of primers which have the biggest PCR product
         within the anneal region.
@@ -137,25 +113,15 @@ class AllPrimerFinder(PrimerFinder):
                 rprimer = dict(primers[i])
                 rprimer['seq'] = self.complement_sequence(rprimer['seq'])
                 if primer_filter(rprimer):
-                    if self.target_region_option: # boolean if a specific
-                        # target range must be found
-                        if self.check_target_range(forward_primer, rprimer):
-                            return {'fprimer': forward_primer, 'rprimer':
-                                primers[i]}
-                    else:
-                        return {'fprimer': forward_primer, 'rprimer':
-                            primers[i]}
-
+                    return {'fprimer': forward_primer, 'rprimer': primers[i]}
 
     def find_primers(self):
         sequence = self.get_annealing_sequence()
         primers = self.find_all_primers(sequence)
         match = self.find_best_match(primers)
         if match:
-            start_forward = (
-                self.set_primer_absolute_position(match['fprimer'])[0])
-            end_reverse = (
-                self.set_primer_absolute_position(match['rprimer'])[1])
+            start_forward = match['fprimer']['position'][0]
+            end_reverse = match['rprimer']['position'][1]
             match['pcr'] = self.sequence[start_forward:end_reverse]
             match['rprimer']['seq'] = self.complement_sequence(
                 match['rprimer']['seq'], False)

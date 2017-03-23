@@ -10,7 +10,6 @@ class ShowPanel(wx.Panel):
         'no primers found'
         This panel is initially hidden.
         """
-
         super(ShowPanel, self).__init__(parent, id)
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.return_button = wx.Button(self, wx.ID_ANY,

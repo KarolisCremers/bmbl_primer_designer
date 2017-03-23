@@ -111,9 +111,9 @@ In deze volgorde zijn de instellingen gedaan:
             +---------------------------+--------------------------+
             | Forward primer            | Reverse primer           |
 +-----------+---------------------------+--------------------------+
-|Sequence:  |                           |                          |
-|Melt temp: |                           |                          |
-|GC%:       |                           |                          |
-|Position:  |                           |                          |
-|PCR:       |                           |                          |
+|Sequence:  | 5'-TCAATCACGCACTAGGC-3'   | 5'-CTCGCCACGTTGGCTAAT-3' |
+|Melt temp: | 58C                       | 56C                      |
+|GC%:       | 52.6315789474%            | 55.5555555555%           |
+|Position:  | 23..42                    | 80..96                   |
+|PCR:       |  75                       |                          |
 +-----------+---------------------------+--------------------------+
