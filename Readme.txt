@@ -105,8 +105,7 @@ In deze volgorde zijn de instellingen gedaan:
 2. De annealing range instellen van 1 tot 120. (Soms is het spelen met deze instelling omdat je nooit weet waar de primers zich bevinden)
 3. Het maximum PCR product instellen op 75. (Hiermee is soms ook even spelen met de instelling nodig)
 4. De target range instellen van 30 tot 90.
-5. Wederom alle experimentele checks aanvinken, want controlestappen zijn meestal goed.
-6. Search primers!
+5. Search primers!
 
             +---------------------------+--------------------------+
             | Forward primer            | Reverse primer           |
@@ -115,5 +114,5 @@ In deze volgorde zijn de instellingen gedaan:
 |Melt temp: | 58C                       | 56C                      |
 |GC%:       | 52.6315789474%            | 55.5555555555%           |
 |Position:  | 23..42                    | 80..96                   |
-|PCR:       |  75                       |                          |
+|PCR:       | 75                        |                          |
 +-----------+---------------------------+--------------------------+
